@@ -9,13 +9,19 @@ root.geometry(f"{config.WIDTH}x{config.HEIGHT}")
 records = []
 
 
-def refresh_records(master, records):
+def refresh_records(root, master, records):
+
+    master.destroy()
+
+    records_frame = LabelFrame(root, padx=4, pady=4, bd=4, relief=FLAT)
+    records_frame.grid(row=2, column=0, sticky=EW)
+    records_frame.grid_columnconfigure(0, weight=1)
 
     for i in range(len(records)):
-        Record(master, i, records[i])
+        Record(root, records_frame, i, records[i])
 
 
-def add_record(master, position):
+def add_record(root, master, position):
 
     global records
     date = dt.datetime.now().strftime("%Y/%m/%d")
@@ -24,12 +30,20 @@ def add_record(master, position):
     content = [date, hour, text]
     records.insert(position, content)
     print(records)
-    refresh_records(master, records)
+    refresh_records(root, master, records)
+
+
+def delete_record(root, master, position):
+
+    global records
+    records.remove(records[position])
+    refresh_records(root, master, records)
+    print(records)
 
 
 class Record():
 
-    def __init__(self, master, position, content):
+    def __init__(self, root, master, position, content):
 
         record_frame = LabelFrame(master, padx=6, pady=6, bg='grey95', relief=FLAT, bd=2)
         record_frame.grid(row=position, column=0, sticky=EW)
@@ -40,12 +54,15 @@ class Record():
         record_frame.grid_columnconfigure(3, weight=500)
 
         top_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95',
-                            command=lambda: add_record(master, position))
+                            command=lambda: add_record(root, master, position))
         top_margin.grid(row=0, column=0)
-        middle_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95')
+
+        middle_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95',
+                               command=lambda: delete_record(root, master, position))
         middle_margin.grid(row=1, column=0)
+
         bot_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95',
-                            command=lambda: add_record(master, position + 1))
+                            command=lambda: add_record(root, master, position + 1))
         bot_margin.grid(row=2, column=0)
 
         date = Button(record_frame, padx=2, pady=2, text=content[0], relief=FLAT, bd=1, bg='grey95')
@@ -85,7 +102,7 @@ records_frame = LabelFrame(root, padx=4, pady=4, bd=4, relief=FLAT)
 records_frame.grid(row=2, column=0, sticky=EW)
 records_frame.grid_columnconfigure(0, weight=1)
 
-add_record(records_frame, position=0)
+add_record(root, records_frame, position=0)
 
 
 # row and column config
