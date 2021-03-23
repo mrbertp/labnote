@@ -13,12 +13,12 @@ def refresh_records(root, master, records):
 
     master.destroy()
 
-    records_frame = LabelFrame(root, padx=4, pady=4, bd=4, relief=FLAT)
-    records_frame.grid(row=2, column=0, sticky=EW)
-    records_frame.grid_columnconfigure(0, weight=1)
+    records_canvas = Canvas(records_frame)
+    records_canvas.grid(row=0, column=0, sticky=EW)
+    records_canvas.grid_columnconfigure(0, weight=1)
 
     for i in range(len(records)):
-        Record(root, records_frame, i, records[i])
+        Record(root, records_canvas, i, records[i])
 
 
 def add_record(root, master, position):
@@ -45,7 +45,7 @@ class Record():
 
     def __init__(self, root, master, position, content):
 
-        record_frame = LabelFrame(master, padx=6, pady=6, bg='grey95', relief=FLAT, bd=2)
+        record_frame = LabelFrame(master, padx=6, pady=6, bg='grey95', relief=SOLID, bd=2, text="record_frame")
         record_frame.grid(row=position, column=0, sticky=EW)
 
         record_frame.grid_columnconfigure(0, weight=1)
@@ -98,12 +98,14 @@ planner_header = Button(headers_frame, text='PLANNER', bd=3, relief=RAISED, padx
 planner_header.grid(row=0, column=2)
 
 # records
-records_frame = LabelFrame(root, padx=4, pady=4, bd=4, relief=FLAT)
+records_frame = LabelFrame(root, padx=4, pady=4, bd=5, relief=SOLID, text="records_frame")
 records_frame.grid(row=2, column=0, sticky=EW)
 records_frame.grid_columnconfigure(0, weight=1)
 
-add_record(root, records_frame, position=0)
+records_canvas = Canvas(records_frame, bg="blue")
+records_canvas.grid(row=0, column=0, sticky=EW)
 
+add_record(root, records_canvas, position=0)
 
 # row and column config
 root.grid_columnconfigure(0, weight=1)
