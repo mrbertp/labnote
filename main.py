@@ -9,19 +9,39 @@ root.geometry(f"{config.WIDTH}x{config.HEIGHT}")
 records = []
 
 
-def refresh_records(root, master, records):
+def refresh_records(root, master_master, master, records):
 
-    master.destroy()
+    master_master.destroy()
 
-    records_canvas = Canvas(records_frame)
-    records_canvas.grid(row=0, column=0, sticky=EW)
+    records_frame = LabelFrame(root, padx=4, pady=4, bd=5, relief=SOLID, text="records_frame")
+    records_frame.grid(row=2, column=0, sticky=E + W + N + S)
+    records_frame.grid_columnconfigure(0, weight=1)
+    records_frame.grid_rowconfigure(0, weight=1)
+
+    records_canvas = Canvas(records_frame, bg="blue")
+    records_canvas.grid(row=0, column=0, sticky=E + W + N + S)
     records_canvas.grid_columnconfigure(0, weight=1)
 
+    scrollbar = Scrollbar(records_frame, orient=VERTICAL, command=records_canvas.yview)
+    scrollbar.grid(row=0, column=1, sticky=N + S)
+
+    records_canvas.configure(yscrollcommand=scrollbar.set)
+    records_canvas.bind("<Configure>", lambda e: records_canvas.config(scrollregion=records_canvas.bbox("all")))
+
+    second_frame = LabelFrame(records_canvas, padx=4, pady=4, bd=5, relief=SOLID, text="second_frame")
+    records_canvas.create_window((0, 0), window=second_frame, anchor="nw", tags="my_tag")
+
     for i in range(len(records)):
-        Record(root, records_canvas, i, records[i])
+        Record(root, records_frame, second_frame, i, records[i])
 
 
-def add_record(root, master, position):
+def set_canvas_scrollregion(event):
+
+    records_canvas.itemconfigure("my_tag", width=event.width)
+    records_canvas.config(scrollregion=records_canvas.bbox("all"))
+
+
+def add_record(root, master_master, master, position):
 
     global records
     date = dt.datetime.now().strftime("%Y/%m/%d")
@@ -30,20 +50,20 @@ def add_record(root, master, position):
     content = [date, hour, text]
     records.insert(position, content)
     print(records)
-    refresh_records(root, master, records)
+    refresh_records(root, master_master, master, records)
 
 
-def delete_record(root, master, position):
+def delete_record(root, master_master, master, position):
 
     global records
     records.remove(records[position])
-    refresh_records(root, master, records)
+    refresh_records(root, master_master, master, records)
     print(records)
 
 
 class Record():
 
-    def __init__(self, root, master, position, content):
+    def __init__(self, root, master_master, master, position, content):
 
         record_frame = LabelFrame(master, padx=6, pady=6, bg='grey95', relief=SOLID, bd=2, text="record_frame")
         record_frame.grid(row=position, column=0, sticky=EW)
@@ -54,15 +74,15 @@ class Record():
         record_frame.grid_columnconfigure(3, weight=500)
 
         top_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95',
-                            command=lambda: add_record(root, master, position))
+                            command=lambda: add_record(root, master_master, master, position))
         top_margin.grid(row=0, column=0)
 
         middle_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95',
-                               command=lambda: delete_record(root, master, position))
+                               command=lambda: delete_record(root, master_master, master, position))
         middle_margin.grid(row=1, column=0)
 
         bot_margin = Button(record_frame, padx=2, pady=2, relief=SOLID, bd=1, bg='grey95',
-                            command=lambda: add_record(root, master, position + 1))
+                            command=lambda: add_record(root, master_master, master, position + 1))
         bot_margin.grid(row=2, column=0)
 
         date = Button(record_frame, padx=2, pady=2, text=content[0], relief=FLAT, bd=1, bg='grey95')
@@ -105,10 +125,13 @@ records_frame.grid_columnconfigure(0, weight=1)
 records_canvas = Canvas(records_frame, bg="blue")
 records_canvas.grid(row=0, column=0, sticky=EW)
 
-add_record(root, records_canvas, position=0)
+add_record(root, records_frame, records_canvas, position=0)
 
 # row and column config
 root.grid_columnconfigure(0, weight=1)
+root.grid_rowconfigure(0, weight=1)
+root.grid_rowconfigure(1, weight=1)
+root.grid_rowconfigure(2, weight=1000)
 top_frame.grid_columnconfigure(0, weight=1)
 top_frame.grid_columnconfigure(1, weight=1)
 top_frame.grid_columnconfigure(2, weight=1)
