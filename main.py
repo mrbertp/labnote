@@ -106,6 +106,7 @@ class Diary_Panel(LabelFrame):
         self.canvas.create_window((0, 0), window=self.frame, anchor="nw", tags="my_tag")
         self.frame.bind("<Configure>", self.config_frame)
         self.canvas.bind("<Configure>", self.config_canvas)
+        self.bind_all("<MouseWheel>", self.mouse_scroll)
 
     def config_frame(self, event):
 
@@ -114,6 +115,10 @@ class Diary_Panel(LabelFrame):
     def config_canvas(self, event):
 
         self.canvas.itemconfigure("my_tag", width=event.width - 8)
+
+    def mouse_scroll(self, event):
+
+        self.canvas.yview_scroll(int(-1 * event.delta / 120), "units")
 
 
 root = Tk()
