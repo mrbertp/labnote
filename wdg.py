@@ -83,42 +83,32 @@ class Record(LabelFrame):
         self.grid_columnconfigure(1, weight=2)
         self.grid_columnconfigure(2, weight=100)
 
-    def refresh_records(self):
-
-        if len(self.head.records) != 0:
-
-            self.head.panel.frame.destroy()
-            self.head.panel.load()
-
-            for i in range(len(self.head.records)):
-                Record(self.head, i, self.head.records[i])
-
-            self.head.panel.conf()
-
-        else:
-
-            Record(self.head, position=0, content=['-', '-', 'Press the "^" button to add a Record above\nPress the "v" button to add a Record below'])
-
     def add_record(self, position):
 
-        if len(self.head.records) != 0:
-
-            self.head.save_records()
-
-        date = dt.datetime.now().strftime("%Y/%m/%d")
+        date = self.head.calendar.selected_date
         hour = dt.datetime.now().strftime("%H:%M")
         text = ''
         content = [date, hour, text]
-        self.head.records.insert(position, content)
-        self.refresh_records()
+
+        if self.head.calendar.selected_date in self.head.records.keys():
+
+            self.head.save_records()
+            self.head.records[self.head.calendar.selected_date].insert(position, content)
+
+        else:
+            self.head.records[self.head.calendar.selected_date] = [content]
+
+        self.head.refresh_records()
 
     def delete_record(self, position):
 
-        if len(self.head.records) != 0:
-
-            self.head.save_records()
-            self.head.records.remove(self.head.records[position])
-            self.refresh_records()
+        if self.head.calendar.selected_date in self.head.records.keys():
+            if len(self.head.records[self.head.calendar.selected_date]) > 1:
+                self.head.save_records()
+                del self.head.records[self.head.calendar.selected_date][position]
+            else:
+                del self.head.records[self.head.calendar.selected_date]
+            self.head.refresh_records()
 
 
 class Calendar(LabelFrame):
@@ -129,7 +119,8 @@ class Calendar(LabelFrame):
 
         LabelFrame.__init__(self, self.parent, padx=10, pady=10, bd=2, relief=SOLID)
 
-        self.today = list(map(int, dt.datetime.now().strftime("%Y-%m-%d").split("-")))
+        self.today = dt.datetime.now().strftime("%Y/%m/%d").split("/")
+        self.selected_date = '/'.join(self.today)
 
         self.year = Frame(self, padx=10, pady=10)
         self.year.grid(row=0, column=0, sticky=N)
@@ -139,8 +130,8 @@ class Calendar(LabelFrame):
         self.previous_year = Button(self.year, relief=SOLID, text='<', width=4, heigh=1)
         self.previous_year.grid(row=0, column=0, sticky=E)
 
-        self.show_year = int(dt.datetime.now().strftime("%Y"))
-        self.year_button = Button(self.year, relief=SOLID, text=self.show_year, width=10, height=1)
+        self.year_to_show = int(self.today[0])
+        self.year_button = Button(self.year, relief=SOLID, text=self.year_to_show, width=10, height=1)
         self.year_button.grid(row=0, column=1)
 
         self.next_year = Button(self.year, relief=SOLID, text='>', width=4, heigh=1)
@@ -155,7 +146,7 @@ class Calendar(LabelFrame):
         self.previous_month = Button(self.month, relief=SOLID, text='<', width=4, heigh=1, command=lambda: self.update_display(-1))
         self.previous_month.grid(row=0, column=0, sticky=E)
 
-        self.month_to_show = int(dt.datetime.now().strftime("%m"))
+        self.month_to_show = int(self.today[1])
         self.month_button = Button(self.month, relief=SOLID, text=cfg.months[self.month_to_show - 1], width=10, height=1)
         self.month_button.grid(row=0, column=1)
 
@@ -177,12 +168,14 @@ class Calendar(LabelFrame):
 
         for i in range(1, cfg.month_dict[cfg.months[self.month_to_show - 1]] + 1):
 
-            self.is_today = (self.show_year == self.today[0]) and (self.month_to_show == self.today[1]) and (i == self.today[2])
+            self.is_today = (self.year_to_show == int(self.today[0])) and (self.month_to_show == int(self.today[1])) and (i == int(self.today[2]))
             self.day_button = Button(self.days,
+                                     relief=SOLID,
                                      bg='black' if self.is_today else '#F0F0F0',
                                      fg='white' if self.is_today else 'black',
-                                     text=i, height=2, width=6,
-                                     command=lambda: self.update_selected(text))
+                                     text=i,
+                                     command=lambda day=i: self.update_selected(day),
+                                     height=2, width=6)
             self.day_button.grid(row=((i + cfg.week_scheme[self.month_to_show - 1]) // 7 - 1) if ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 == 0) else ((i + cfg.week_scheme[self.month_to_show - 1]) // 7),
                                  column=6 if ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 == 0) else ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 - 1))
 
@@ -195,13 +188,22 @@ class Calendar(LabelFrame):
         self.days.destroy()
         self.load_days()
 
+    def update_selected(self, day):
+
+        # TODO: highlight the selected day by changing the background color
+        self.parent.save_records()
+        date_string = list(map(str, [self.year_to_show, self.month_to_show, day]))
+        date_padded = list(map(lambda s: s.rjust(2, "0"), date_string))
+        self.selected_date = '/'.join(date_padded)
+        self.parent.refresh_records()
+
 
 class Diary(LabelFrame):
 
     def __init__(self, parent):
 
         self.parent = parent
-        self.records = []
+        self.records = {}
 
         LabelFrame.__init__(self, self.parent, bd=2, relief=SOLID)
 
@@ -214,20 +216,9 @@ class Diary(LabelFrame):
         self.panel.load()
         self.panel.grid(row=1, column=1, sticky=N + S + E + W)
 
-        try:
-            self.load_records()
+        self.load_records()
 
-            if len(self.records) == 0:
-                Record(self, position=0, content=['-', '-', 'Press the "^" button to add a Record above\nPress the "v" button to add a Record below'])
-
-            else:
-                for i in range(len(self.records)):
-                    Record(self, position=i, content=self.records[i])
-
-        except:
-            Record(self, position=0, content=['-', '-', 'Press the "^" button to add a Record above\nPress the "v" button to add a Record below'])
-
-        self.panel.conf()
+        self.refresh_records()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -236,20 +227,58 @@ class Diary(LabelFrame):
 
     def save_records(self):
 
-        self.records = []
-        for child in self.panel.frame.winfo_children():
-            new_text = child.text.get("1.0", "end-1c")
-            self.records.append([child.content[0], child.content[1], new_text])
+        # TODO: sort records by date before saving into file
+        if self.calendar.selected_date in self.records.keys():
 
-        with open('records.txt', 'w') as file:
-            for i in range(len(self.records)):
-                file.write(';'.join(self.records[i]) + '\n\n')
+            self.records[self.calendar.selected_date] = []
+
+            for child in self.panel.frame.winfo_children():
+                new_text = child.text.get("1.0", "end-1c")
+                self.records[self.calendar.selected_date].append([child.content[0], child.content[1], new_text])
+
+            with open('records.txt', 'w') as file:
+                file.write('-----\n')
+                for i in self.records.keys():
+                    file.write('\n')
+                    for j in self.records[i]:
+                        file.write('>' + ';'.join(j) + '\n')
+                    file.write('>-----\n')
 
     def load_records(self):
 
-        with open('records.txt', 'r') as file:
-            file_content = file.read()
-            lines = file_content.split('\n\n')
-            for line in lines:
-                if line != '':
-                    self.records.append(line.split(';'))
+        self.records = {}
+
+        try:
+            with open('records.txt', 'r') as file:
+                file_content = file.read()
+                days = file_content.split('-----\n')
+                for day in days:
+                    if day != '':
+                        aux = []
+                        entries = day.split('\n>')
+                        for entry in entries:
+                            if entry != '':
+                                aux.append(entry.split(';'))
+                        date = aux[0][0]
+                        self.records[date] = aux
+        except:
+            open('records.txt', 'w').close()
+
+        for k in self.records.keys():
+            print(k, self.records[k])
+
+    def refresh_records(self):
+
+        self.panel.frame.destroy()
+        self.panel.load()
+
+        if self.calendar.selected_date in self.records.keys():
+
+            for i in range(len(self.records[self.calendar.selected_date])):
+                Record(self, i, self.records[self.calendar.selected_date][i])
+
+        else:
+
+            Record(self, position=0, content=['-', '-', 'Press the "^" button to add a Record above\nPress the "v" button to add a Record below'])
+
+        self.panel.conf()
