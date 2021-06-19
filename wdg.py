@@ -162,22 +162,40 @@ class Calendar(LabelFrame):
         self.days = Frame(self, padx=10, pady=10, bd=2, relief=SOLID)
         self.days.grid(row=2, column=0)
 
-        for i in range(7):
+        for i in range(len(cfg.week_days)):
 
-            self.days.grid_columnconfigure(i, weight=1)
+            self.week_day = Label(self.days,
+                                  text=cfg.week_days[i],
+                                  font='Arial 9 bold',
+                                  height=2,
+                                  width=6,
+                                  padx=0, pady=0,
+                                  anchor=N)
+
+            self.week_day.grid(row=0, column=i)
 
         for i in range(1, cfg.month_dict[cfg.months[self.month_to_show - 1]] + 1):
 
             self.is_today = (self.year_to_show == int(self.today[0])) and (self.month_to_show == int(self.today[1])) and (i == int(self.today[2]))
+            self.is_selected = '/'.join(list(map(lambda s: s.rjust(2, "0"), list(map(str, [self.year_to_show, self.month_to_show, i]))))) == self.selected_date
             self.day_button = Button(self.days,
                                      relief=SOLID,
-                                     bg='black' if self.is_today else '#F0F0F0',
-                                     fg='white' if self.is_today else 'black',
+                                     bg='dark grey' if self.is_selected else '#F0F0F0',
+                                     fg='red' if self.is_today else 'black',
                                      text=i,
+                                     font='Consolas 10 bold' if self.is_today else 'Consolas 10',
+                                     padx=4,
+                                     pady=4,
                                      command=lambda day=i: self.update_selected(day),
-                                     height=2, width=6)
-            self.day_button.grid(row=((i + cfg.week_scheme[self.month_to_show - 1]) // 7 - 1) if ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 == 0) else ((i + cfg.week_scheme[self.month_to_show - 1]) // 7),
+                                     height=2, width=5)
+            self.day_button.grid(row=((i + cfg.week_scheme[self.month_to_show - 1]) // 7 - 1) + 1 if ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 == 0) else ((i + cfg.week_scheme[self.month_to_show - 1]) // 7) + 1,
                                  column=6 if ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 == 0) else ((i + cfg.week_scheme[self.month_to_show - 1]) % 7 - 1))
+
+        for i in range(7):
+
+            self.days.grid_columnconfigure(i, weight=1)
+
+        self.days.grid_rowconfigure(0, weight=1)
 
     def update_display(self, direction):
 
@@ -195,7 +213,11 @@ class Calendar(LabelFrame):
         date_string = list(map(str, [self.year_to_show, self.month_to_show, day]))
         date_padded = list(map(lambda s: s.rjust(2, "0"), date_string))
         self.selected_date = '/'.join(date_padded)
+
         self.parent.refresh_records()
+
+        self.days.destroy()
+        self.load_days()
 
 
 class Diary(LabelFrame):
@@ -227,7 +249,6 @@ class Diary(LabelFrame):
 
     def save_records(self):
 
-        # TODO: sort records by date before saving into file
         if self.calendar.selected_date in self.records.keys():
 
             self.records[self.calendar.selected_date] = []
@@ -238,7 +259,7 @@ class Diary(LabelFrame):
 
             with open('records.txt', 'w') as file:
                 file.write('-----\n')
-                for i in self.records.keys():
+                for i in sorted(self.records.keys()):
                     file.write('\n')
                     for j in self.records[i]:
                         file.write('>' + ';'.join(j) + '\n')
@@ -263,9 +284,6 @@ class Diary(LabelFrame):
                         self.records[date] = aux
         except:
             open('records.txt', 'w').close()
-
-        for k in self.records.keys():
-            print(k, self.records[k])
 
     def refresh_records(self):
 

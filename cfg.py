@@ -2,7 +2,7 @@ PHI = (1 + 5**0.5) / 2
 WIDTH = int(600)
 HEIGHT = int(500 * PHI)
 
-week_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+week_days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
