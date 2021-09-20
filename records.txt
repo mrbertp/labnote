@@ -1,0 +1,127 @@
+-----
+
+>2021/07/09;14:00;Se transforma el plásmido FYP2827 recibido de la NBRP de Japón en E. coli DH5alpha competentes.
+|
+>-----
+
+>2021/07/10;15:00;Despues de 24 horas, se miran las placas de transformación de E. coli y no se observan colonias en el caso experimental (ni diluido y concentrado).
+Se esperarán 24 horas más.
+|
+>2021/07/10;15:15;Se refrescan las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572 en sus mismas placas.
+|
+>-----
+
+>2021/07/11;15:00;Tras 48 horas, se sigue sin observar colonias en la transformación de E. coli.
+Se entiende que no ha salido la transformación.
+|
+>2021/07/11;19:30;Se congela la cepa recibida de la colección japonesa NBRP FY33606 en YES con Glicerol (30%) en la colección AFA como AFA 576.
+|
+>2021/07/11;20:00;Se ponen precultivos de las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572 en 10 mL de YES a 180 rpm a 25ºC overnight.
+|
+>-----
+
+>2021/07/12;9:30;Se mide la DO de los precultivos de las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572. Estas todos saturados (DO entre 1 y 3).
+|
+>2021/07/12;10:00;Se diluyen los precultuvos de las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572 para que a las 17:00 estén a DO = 0,6 y se dejan agitando a 180 rpm a 30ºC.
+|
+>2021/07/12;11:00;Se hacen los cruces AFA 576 x AFA 564 y AFA 576 x AFA 570 en una placa de SPA (2 parches por cruce) y se deja incubando a 25ºC.
+|
+>2021/07/12;11:15;Se parchean 3 colonias independientes de la cepa FY33606 (AFA 576) en una placa de YES y se deja incubando a 32ºC.
+|
+>2021/07/12;16:00;Se prepara una solución de stock de auxina (IAA) a 100 mM en etanol puro (1g IAA en 54 mL etanol 96%).
+|
+>2021/07/12;17:00;Se mide la DO de los cultivos de las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572. Estan todos entre 0,6 y 0,7. Se hace el ensayo de gotas con ellos.
+
+En la primera columna se pone cada cultivo (200 uL) a DO = 0,4 y en las siguientes columnas se hacen diluciones seriadas 1/10.
+
+Se usan 4 placas de YES (2 x 25ºC y 2 x 32ºC) y 4 placas de YES + IAA (185 ug/mL) (2 x 25ºC y 2 x 32ºC).
+|
+>-----
+
+>2021/07/13;11:30;Se preparan muestras en cámaras de microscopía, una de las cepas AFA 51 y otra de la cepa AFA 570 en medio mínimo (EMM2) para el training del Spinning 3i.
+|
+>2021/07/13;12:00;Se hace el training del Spinning 3i. Se comprueba que se ven los MTs (mCherry) mejor que en la anterior sesión y los cromosomas se siguen viendo bien.
+
+Se hace un pequeño timelapse de 5 min con timepoint de 1 min. Nos damos cuenta que el procesamiento y visualización de las imágenes por parte dle ordenador es mucho más lenta que la adquisición real de las imágenes (láseres). Katy dará cuenta de ellos al informático. También, vemos que la adquisición de azul, rojo y verde necesita del uso de los dos dicroicos (triple y cuádruple), requiriendo cambio entre los dicroicos durante la adquisición, lo que enlentece la adquisición de imágenes.
+|
+>2021/07/13;20:00;Se ponen precultivos de las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572 en 10 mL de YES y se dejan agitando a 180 rpm a 30ºC overnight.
+|
+>-----
+
+>2021/07/14;11:00;Se diseccionan (ascas) 2 placas de YES del cruce AFA 564 x AFA 576 y 2 placas de YES del cruce AFA 570 x AFA 576. Se dejan incubando a 30ºC 4-5 horas.
+|
+>2021/07/14;14:00;Se hacen fotos de los cultivos de las cepas AFA 51, 373, 564, 565, 566, 570, 571, 572 (estaban saturados ya) en el Spinning Disk, bajo los canales de CFP (405 nm) 25%, GFP (491 nm) 50% y mCherry (625 nm) 50%. Las fotos se guardan en la carpeta "transformantes-alp4".
+|
+>2021/07/14;15:30;Se diseccionan (esporas) 2 placas de YES del cruce AFA 564 x AFA 576 y 2 placas de YES del cruce AFA 570 x AFA 576. Se dejan incubando a 30ºC.
+|
+>2021/07/14;19:00;Se escanean las placas de ensayo de gotas de 25ºC y 32ºC (boca arriba y boca abajo). Las fotos se guardan en la carpeta "14072021_EG_AUX".
+|
+>2021/07/14;19:30;Se congelan los 3 parches de las 3 colonias aisladas de la cepa FY33606 en YES + Glicerol (30%) y se aÃ±aden a la colección AFA como AFA 577, 578 y 579.
+|
+>-----
+
+>2021/07/15;17:30;Se echa un vistazo a las placas diseccionadas de los cruces AFA 564 x 576 y AFA 570 x 576. La linea de biomasa está creciendo, aunque todavía no hay ninguna colonia visible.
+|
+>2021/07/15;18:00;Se escanean las placas de ensayo de gotas de 25ºC y 32ºC con y sin auxina. Las imágenes se guardan en la carpeta "EG_AUX".
+|
+>2021/07/15;18:30;Se descongelan las cepas AFA 97, 117, 210, 219, 564-575 en placas de YES y se dejan incubando a 32ºC.
+|
+>-----
+
+>2021/07/16;15:00;Se ponen a digerir los plásmidos pHyg-AID*-GFP (#3), pFA6a-kanMX6-P41nmt1-GFP (#1) y pFA6a-kanMX6-P81nmt1-GFP (#2) (0,5 ug de cada uno) con la enzima PagI (a.k.a. BsphI) (2 U) a 37ºC 2 horas.
+|
+>2021/07/16;16:00;Se transforman E. coli competentes con 10 uL de ~40 uL de plÃ¡smido recuperado desde el papel (ya usado previamente) en el que venía el plásmido FYP2827.
+|
+>2021/07/16;19:30;Se ponen preinóculos de las cepas AFA 97, 117, 210, 219, 564-575 en 10 mL de YES y se dejan agitado a 180 rpm a 25ºC.
+|
+>-----
+
+>2021/09/15;14:00;Se hace una PCR con la MyTaq con el siguiente esquema:
+wt	gDNA wt	AFA1-AFA2
+PL3	PL3	AFA107-AFA108
+PL19	PL19	AFA107-AFA108
+T anneal: 52ºC, t ext: 2 min
+|
+>2021/09/15;16:00;Se prepara un gel de agarosa al 1% (0.4 g en 40 mL TAE)
+|
+>2021/09/15;16:30;Se pone a correr el gel con las muestras:
+wt  MM  PL3  PL19
+|
+>2021/09/15;18:03;Se hace una foto del gel de electroforesis. Parece que siguen saliendo bandas inespecificas para los plásmidos... Se subirá la temperatura de annealing la próxima vez para intentar quitar las bandas inespecificas y esperar ver la específica.
+|D:/Proyecto - Alfonso/Tesis/Truncados/Resultados/PCRs/wt_MM_PL3_PL19_conGFP.bmp
+>-----
+
+>2021/09/16;10:06;Se preparan 4 placas de YES para diseccionar:
+2 x [AFA993 x AFA576]
+2 x [AFA994 x AFA576]
+|
+>2021/09/16;13:30;Se diseccionan 3 placas (ascas):
+1 x [993x576]
+2 x [994x576]
+y se dejan a 30ºC.
+|
+>2021/09/16;17:16;Se disecciona 1 placa (esporas):
+993x576
+y se deja a 30ºC.
+|
+>2021/09/16;17:45;Se diseccionan las 2 placas restantes (esporas):
+993x576
+994x576
+y se dejan a 30ºC.|
+>-----
+
+>2021/09/17;11:46;Se hace una PCR con la MyTaq con el siguiente esquema:
+wt	gDNA wt	AFA1-AFA2
+PL3	PL3	AFA107-AFA108
+PL19	PL19	AFA107-AFA108
+T anneal: 54ºC, t ext: 2' 30''|
+>2021/09/17;14:00;Se pone a correr la PCR en un gel de agarosa al 1% 40 min a 120V|
+>2021/09/17;14:30;Se descongela la cepa AFA577 en una placa de YES y se deja a 32ºC.|
+>2021/09/17;15:00;Se hace una foto del gel|D:/Proyecto - Alfonso/Tesis/Truncados/Resultados/PCRs/wt_PL3_PL19_MM_conGFP_2m30s_54C.bmp
+>-----
+
+>2021/09/19;08:58;Se refresca en placa de YES la cepa AFA577 y se deja a 32ºC.|
+>-----
+
+>2021/09/20;08:15;Se pone un parche de la cepa AFA577 en SPA a 28ºC.|
+>-----

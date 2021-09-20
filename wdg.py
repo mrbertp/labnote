@@ -1,6 +1,8 @@
 from tkinter import *
+from PIL import ImageTk, Image
 import cfg
 import datetime as dt
+import math
 
 
 class Panel(LabelFrame):
@@ -9,18 +11,18 @@ class Panel(LabelFrame):
 
         self.parent = parent
 
-        LabelFrame.__init__(self, self.parent, padx=0, pady=0, bd=2, relief=SOLID)
+        LabelFrame.__init__(self, self.parent, padx=0, pady=0, bd=2)
 
     def load(self):
 
-        self.canvas = Canvas(self, bd=0, relief=SOLID)
+        self.canvas = Canvas(self, bd=0)
         self.canvas.grid(row=0, column=0, sticky=N + S + E + W)
 
         self.scrollbar = Scrollbar(self, orient='vertical', command=self.canvas.yview)
         # self.canvas.configure(yscrollcommand=self.scrollbar.set)
         self.scrollbar.grid(row=0, column=1, sticky=N + S)
 
-        self.frame = LabelFrame(self.canvas, padx=0, pady=0, bd=0, relief=SOLID)
+        self.frame = LabelFrame(self.canvas, padx=0, pady=0, bd=0)
         self.frame.grid(row=0, column=0, sticky=E + W)
         self.frame.grid_columnconfigure(0, weight=1)
 
@@ -55,7 +57,7 @@ class Record(LabelFrame):
         self.position = position
         self.content = content
 
-        LabelFrame.__init__(self, self.head.panel.frame, padx=10, pady=10, relief=FLAT, bd=5)
+        LabelFrame.__init__(self, self.head.panel.frame, padx=10, pady=10, relief=FLAT, bd=2)
 
         self.top_button = Button(self, padx=2, pady=2, relief=SOLID, bd=1, width=2, height=1, text='^',
                                  command=lambda: self.add_record(position))
@@ -69,26 +71,54 @@ class Record(LabelFrame):
                                  command=lambda: self.add_record(position + 1))
         self.bot_button.grid(row=2, column=0, sticky=W)
 
-        self.date = Button(self, padx=2, pady=2, text=content[0], relief=FLAT, bd=1, width=10)
+        self.date = Entry(self, justify=CENTER, bd=0, width=10, bg='#F0F0F0')
+        self.date.insert(0, content[0])
         self.date.grid(row=0, column=1, sticky=E + W)
-        self.time = Button(self, padx=2, pady=2, text=content[1], relief=FLAT, bd=1, width=10)
+
+        self.time = Entry(self, justify=CENTER, bd=0, width=10, bg='#F0F0F0')
+        self.time.insert(0, content[1])
         self.time.grid(row=1, column=1, sticky=E + W)
-        self.text = Text(self, bd=5, relief=FLAT, height=5, padx=2, pady=2)
-        self.text.configure(font=("Arial", 10, "normal"))
+
+        self.text = Text(self, wrap=WORD, bd=5, relief=FLAT, height=5, padx=2, pady=2)
+        self.text.configure(font=("Courier New", 10, "normal"))
         self.text.grid(row=0, column=2, rowspan=3, sticky=W + E)
         self.text.insert(INSERT, content[2])
+        self.min_lines = 5
+        self.chars_line = 124
+
+        self.images = content[3]
+
+        pic_icon = PhotoImage(file='img\\picture_icon.png').subsample(3, 3)
+        pic_label = Label(image=pic_icon)
+        self.pic_button = Button(self, image=pic_icon, command=self.open_images, relief=SOLID)
+        self.pic_button.grid(row=2, column=1, sticky=W)
+        pic_label.image = pic_icon
 
         self.grid(row=position, column=0, sticky=W + E)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=2)
         self.grid_columnconfigure(2, weight=100)
 
+        self.bind_all('<Key>', self.config_record)
+
+    def config_record(self, event):
+
+        self.num_lines_chars = math.ceil(len(self.text.get('1.0', 'end-1c')) / self.chars_line)
+        self.num_lines_returns = len(self.text.get('1.0', 'end-1c').split('\n'))
+        if (self.num_lines_chars > self.min_lines):
+            self.text.configure(height=self.num_lines_chars)
+        elif (self.num_lines_returns > self.min_lines):
+            self.text.configure(height=self.num_lines_returns)
+        else:
+            self.text.configure(height=self.min_lines)
+
     def add_record(self, position):
 
         date = self.head.calendar.selected_date
         hour = dt.datetime.now().strftime("%H:%M")
         text = ''
-        content = [date, hour, text]
+        images = []
+        content = [date, hour, text, images]
 
         if self.head.calendar.selected_date in self.head.records.keys():
 
@@ -102,6 +132,7 @@ class Record(LabelFrame):
 
     def delete_record(self, position):
 
+        # I cannot save records after deleting all records from a day
         if self.head.calendar.selected_date in self.head.records.keys():
             if len(self.head.records[self.head.calendar.selected_date]) > 1:
                 self.head.save_records()
@@ -110,6 +141,82 @@ class Record(LabelFrame):
                 del self.head.records[self.head.calendar.selected_date]
             self.head.refresh_records()
 
+    def open_images(self):
+
+        self.img_window = Toplevel(self)
+        self.img_window.grab_set()
+        self.img_window.title('Record Images')
+        self.img_window.geometry('1200x600')
+
+        self.active_img = ''
+
+        self.load_images()
+
+    def add_image(self):
+
+        filename = filedialog.askopenfilename(initialdir='C\\Users\\Bert\\Desktop')
+        self.images.append(filename)
+        self.active_img = self.images[-1]
+        self.reload_images()
+
+    def remove_image(self):
+
+        if len(self.images) > 1:
+            self.images.remove(self.active_img)
+            self.active_img = self.images[-1]
+
+        elif len(self.images) == 1:
+            self.images.remove(self.active_img)
+            self.active_img = ''
+
+        self.reload_images()
+
+    def load_images(self):
+
+        self.img_window_frame = Frame(self.img_window, padx=10, pady=10, relief=SOLID)
+        self.img_window_frame.grid(row=0, column=0)
+
+        self.images_names = Frame(self.img_window_frame, padx=10, pady=10, relief=SOLID)
+        self.images_names.grid(row=0, column=0)
+
+        self.images_display = Frame(self.img_window_frame, padx=10, pady=10, relief=SOLID)
+        self.images_display.grid(row=0, column=1)
+
+        self.images_actions = Frame(self.img_window_frame, padx=10, pady=10, relief=SOLID)
+        self.images_actions.grid(row=1, column=0)
+        Button(self.images_actions, text='Add', command=self.add_image).grid(row=0, column=0)
+        Button(self.images_actions, text='Remove', command=self.remove_image).grid(row=0, column=1)
+
+        if len(self.images) == 0:
+            self.active_img = ''
+            Label(self.images_names, text='No images in this record', anchor='w').grid(row=0, column=0, sticky=W)
+        else:
+            for i in range(len(self.images)):
+                Button(self.images_names, text=self.images[i].split('/')[-1], command=lambda name=self.images[i]: self.switch_image(name)).grid(row=i, column=0, sticky=W)
+
+        if self.active_img != '':
+            self.display_image()
+        else:
+            Label(self.images_display, text='No image selected').grid(row=0, column=0)
+
+    def reload_images(self):
+
+        self.img_window_frame.destroy()
+        self.load_images()
+
+    def switch_image(self, name):
+
+        self.active_img = name
+        self.reload_images()
+
+    def display_image(self):
+
+        img_open = Image.open(self.active_img)
+        img_load = ImageTk.PhotoImage(img_open)
+        self.img_label = Label(self.images_display, image=img_load)
+        self.img_label.grid(row=0, column=0)
+        self.img_label.image = img_load
+
 
 class Calendar(LabelFrame):
 
@@ -117,7 +224,7 @@ class Calendar(LabelFrame):
 
         self.parent = parent
 
-        LabelFrame.__init__(self, self.parent, padx=10, pady=10, bd=2, relief=SOLID)
+        LabelFrame.__init__(self, self.parent, padx=10, pady=10, bd=2)
 
         self.today = dt.datetime.now().strftime("%Y/%m/%d").split("/")
         self.selected_date = '/'.join(self.today)
@@ -154,8 +261,6 @@ class Calendar(LabelFrame):
         self.next_month.grid(row=0, column=2, sticky=W)
 
         self.load_days()
-
-        self.grid(row=1, column=0, sticky=W + N + S)
 
     def load_days(self):
 
@@ -208,7 +313,6 @@ class Calendar(LabelFrame):
 
     def update_selected(self, day):
 
-        # TODO: highlight the selected day by changing the background color
         self.parent.save_records()
         date_string = list(map(str, [self.year_to_show, self.month_to_show, day]))
         date_padded = list(map(lambda s: s.rjust(2, "0"), date_string))
@@ -227,12 +331,13 @@ class Diary(LabelFrame):
         self.parent = parent
         self.records = {}
 
-        LabelFrame.__init__(self, self.parent, bd=2, relief=SOLID)
+        LabelFrame.__init__(self, self.parent, bd=2)
 
         self.save_button = Button(self, text='Save', command=self.save_records)
         self.save_button.grid(row=0, column=0, sticky=W)
 
         self.calendar = Calendar(self)
+        self.calendar.grid(row=1, column=0, sticky=N + E + W)
 
         self.panel = Panel(self)
         self.panel.load()
@@ -245,24 +350,28 @@ class Diary(LabelFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        self.grid(row=2, column=0, sticky=S + N + E + W)
-
     def save_records(self):
 
+        # TODO: save records when clicking close button
+        # TODO: reorganize records when hour and/or date are edited
+        # TODO: study the forbidden characters for text entry
         if self.calendar.selected_date in self.records.keys():
 
             self.records[self.calendar.selected_date] = []
 
             for child in self.panel.frame.winfo_children():
                 new_text = child.text.get("1.0", "end-1c")
-                self.records[self.calendar.selected_date].append([child.content[0], child.content[1], new_text])
+                new_date = child.date.get()
+                new_time = child.time.get()
+                new_images = child.images
+                self.records[self.calendar.selected_date].append([new_date, new_time, new_text, new_images])
 
             with open('records.txt', 'w') as file:
                 file.write('-----\n')
                 for i in sorted(self.records.keys()):
                     file.write('\n')
                     for j in self.records[i]:
-                        file.write('>' + ';'.join(j) + '\n')
+                        file.write('>' + ';'.join(j[:-1]) + '|' + ';'.join(j[-1]) + '\n')
                     file.write('>-----\n')
 
     def load_records(self):
@@ -279,11 +388,18 @@ class Diary(LabelFrame):
                         entries = day.split('\n>')
                         for entry in entries:
                             if entry != '':
-                                aux.append(entry.split(';'))
+                                text, images = entry.split('|')
+                                processed_entry = text.split(';')
+                                if images == '':
+                                    processed_images = []
+                                else:
+                                    processed_images = images.split(';')
+                                processed_entry.append(processed_images)
+                                aux.append(processed_entry)
                         date = aux[0][0]
                         self.records[date] = aux
         except:
-            open('records.txt', 'w').close()
+            open('records_new.txt', 'w').close()
 
     def refresh_records(self):
 
@@ -297,6 +413,28 @@ class Diary(LabelFrame):
 
         else:
 
-            Record(self, position=0, content=['-', '-', 'Press the "^" button to add a Record above\nPress the "v" button to add a Record below'])
+            Record(self, position=0, content=['-', '-', 'Press the "^" button to add a Record above\nPress the "v" button to add a Record below', []])
 
         self.panel.conf()
+
+
+class Schedule(LabelFrame):
+
+    def __init__(self, parent):
+
+        self.parent = parent
+
+        LabelFrame.__init__(self, self.parent, relief=SOLID)
+
+        self.save_button = Button(self, text='Save')
+        self.save_button.grid(row=0, column=0, sticky=W)
+
+        self.calendar = Calendar(self)
+        self.calendar.grid(row=1, column=0, sticky=N + E + W)
+
+        self.panel = Panel(self)
+        self.panel.load()
+        self.panel.grid(row=1, column=1, sticky=N + E + W)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
