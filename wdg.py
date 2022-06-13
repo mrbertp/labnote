@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import filedialog
 from PIL import ImageTk, Image
 import cfg
 import datetime as dt
